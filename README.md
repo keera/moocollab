@@ -8,17 +8,17 @@ I'm currently taking two MOOC's on Coursera, and I find it difficult to form stu
 * Peer reviewing each others work
 * Topic Discussion
 
-> Do you mean real life collaboration?
+> Does this collaboration have to happen in person?
 
 Not necessarily. There are a number of ways to collaborate online in real-time.
 
-> Can't you collaborate on online discussion forums?
+> Can't you just collaborate on online discussion forums?
 
-In a way, yes. But forums are not real-time, no matter how short the response times may be. They serve more as Q&A platforms, and are appropriate for hosting asynchronous discussions.
+In a way, yes. But forums are not real-time, and they serve more as Q&A platforms, which is more appropriate for hosting asynchronous discussion.
 
-> Doesn't Coursera have a meetup site?
+> Doesn't Coursera have a meetup site that allows you to form study meetups?
 
-Meetup was designed for in-person meetups, so naturally the groups are location-based. Although this is great for students seeking out local study groups, it alienates both those who do not have the time to travel and meet up in person, and those who simply don't want to.
+Sure, Meetup was designed for in-person meetups, so naturally the groups are location-based. Although this is great for students seeking out local study groups, it alienates both those who do not have the time to travel and meet up in person, and those who simply don't want to.
 
 And even though Meetup was designed for in-person meetups, it wasn't designed for a particular kind of meetup: study groups. It's actually quite restrictive, and here's why:
 
