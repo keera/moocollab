@@ -125,39 +125,39 @@
                         <div class="form-group">
                             <label class="col-sm-2" for="exampleInputEmail1">Email</label>
                             <div class="col-sm-10">
-                                <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+                                <input type="email" name="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2" for="exampleInputEmail1">Course</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                                <input type="text" name="course" class="form-control" id="exampleInputPassword1" placeholder="Password">
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2" for="exampleInputEmail1">Location</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                                <input type="text" name="location" class="form-control" id="exampleInputPassword1" placeholder="Password">
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2" for="exampleInputPassword1">Display Name</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                                <input type="text" name="displayname" class="form-control" id="exampleInputPassword1" placeholder="Password">
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2">Intro</label>
                             <div class="col-sm-10">
-                                <span class="label label-info">150 char limit</span>
-                                <textarea class="form-control" rows="3"></textarea>
+                                <span class="label label-info">256 char limit</span>
+                                <textarea class="form-control" name="intro" rows="3"></textarea>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button id="submit" type="button" class="btn btn-primary">Submit</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -176,6 +176,7 @@
 <script type="text/javascript" src="bower_components/backbone/backbone-min.js"></script>
 <script type="text/javascript" src="js/init.js"></script>
 <script type="text/javascript" src="js/router.js"></script>
+<script type="text/javascript" src="js/models/form.js"></script>
 <script type="text/javascript" src="js/views/home.js"></script>
 <script type="text/javascript" src="js/views/about.js"></script>
 <script type="text/javascript" src="js/views/main.js"></script>
