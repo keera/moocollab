@@ -7,7 +7,31 @@
     template: Handlebars.compile($("#home").html()),
 
     events: {
-      'click #submit': 'submitForm'
+      'click #submit': 'submitForm',
+      "keydown textarea[name='intro']": 'updateCharLimit'
+    },
+
+    updateCharLimit: function() {
+      var length = this.$("textarea[name='intro']")
+        .val()
+        .length;
+      var remaining = 256 - length;
+
+      if (remaining < 128 && remaining >= 64) {
+        this.$('.countdown')
+          .removeClass('label-info label-danger')
+          .addClass('label-warning');
+      } else if (remaining < 64) {
+        this.$('.countdown')
+          .removeClass('label-info label-warning')
+          .addClass('label-danger');
+      } else {
+        this.$('.countdown')
+          .removeClass('label-warning label-danger')
+          .addClass('label-info');
+      }
+
+      this.$('.countdown').html(remaining + ' characters remaining');
     },
 
     submitForm: function() {
