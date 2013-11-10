@@ -52,6 +52,12 @@
         .jumbotron {
             text-align: center;
             border-bottom: 1px solid #e5e5e5;
+            background-image: url('http://soshable.com/wp-content/uploads/2013/01/Educate.jpg');
+            background-repeat: no-repeat;
+        }
+
+        .jumbotron .lead {
+            color: #fff;
         }
         .jumbotron .btn {
             font-size: 21px;
@@ -88,13 +94,17 @@
 </head>
 <body>
     <div id="main" class="container">
-        <div class="header">
-            <ul class="nav nav-pills pull-right">
-                <li><a class="home" href="#">Home</a></li>
-                <li><a class="about" href="#">About</a></li>
-            </ul>
-            <h3 class="text-muted">MooCollab</h3>
-        </div>
+        <nav class="navbar navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">MooCollab</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a class="home" href="#">Home</a></li>
+                    <li><a class="about" href="#">About</a></li>
+                </ul>
+            </div>
+        </nav>
         <!-- View -->
         <div id="content">
         </div>

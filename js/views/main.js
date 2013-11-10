@@ -16,7 +16,7 @@
     },
 
     updateTab: function(current) {
-      this.$('.header li')
+      this.$('.navbar-nav li')
         .removeClass('active')
         .filter(function() {
           return $(this).children().attr('class') == current;
