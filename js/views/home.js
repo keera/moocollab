@@ -9,14 +9,6 @@
     events: {
       'click #submit': 'submitForm',
       "keydown textarea[name='intro']": 'updateCharLimit',
-      "keydown input[name='location']": 'updateSpinner'
-    },
-
-    updateSpinner: function() {
-      var length = this.$("input[name='location']").val().length;
-      if (length >= 3) {
-        this.$('.twitter-typeahead').addClass('autocomplete-loading');
-      }
     },
 
     updateCharLimit: function() {
@@ -87,10 +79,15 @@
         this.$('.twitter-typeahead')
         .removeClass('autocomplete-loading');}, this);
 
+      var beforeSend = _.bind(function(e) {
+        this.$('.twitter-typeahead')
+        .addClass('autocomplete-loading');}, this);
+
       this.$('.twitter-typeahead').typeahead({
         name: 'cities',
         remote: {
           url: 'http://gd.geobytes.com/AutoCompleteCity?callback=?&q=%QUERY',
+          beforeSend: beforeSend,
           complete: onComplete
         },
         limit: 2,
