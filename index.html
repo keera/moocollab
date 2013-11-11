@@ -11,6 +11,10 @@
             padding-bottom: 20px;
         }
 
+        html {
+            overflow: scroll;
+        }
+
         /* Everything but the jumbotron gets side spacing for mobile first views */
         .header,
         .marketing,
@@ -50,7 +54,7 @@
 
         /* Main marketing message and sign up button */
         .jumbotron {
-            text-align: center;
+            /*text-align: center;*/
             border-bottom: 1px solid #e5e5e5;
             background-image: url('http://soshable.com/wp-content/uploads/2013/01/Educate.jpg');
             background-repeat: no-repeat;
@@ -113,15 +117,28 @@
         </div>
     </div>
 
-
 <!-- Templates -->
 <script id="home" type="text/x-handlebars-template">
     <div class="jumbotron">
-        <p class="lead">Sick of trying to find a study group for a MOOC? We can help.</p>
+        <p class="lead">Trying to find a study group for a MOOC? We can help.</p>
         <p>
             <button class="btn btn-success btn-lg" data-toggle="modal" data-target="#myModal">Find me a group</button>
         </p>
     </div>
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <h3 class="panel-title">How it works</h3>
+        </div>
+        <div class="panel-body">
+            <h3><span class="label label-default">Step 1</span></h3>
+            <p>Click the <span class="label label-success">Find me a group</span> button and fill out your profile.</p>
+            <h3><span class="label label-default">Step 2</span></h3>
+            <p>Based on your information, our system will try to match you with two other classmates.</p>
+            <h3><span class="label label-default">Step 3</span></h3>
+            <p>Once there's a match, you will receive an email containing a link to a private group page containing further instructions.</p>
+        </div>
+    </div>
+
     <!-- Modal -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
