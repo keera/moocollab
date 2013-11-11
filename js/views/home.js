@@ -8,7 +8,15 @@
 
     events: {
       'click #submit': 'submitForm',
-      "keydown textarea[name='intro']": 'updateCharLimit'
+      "keydown textarea[name='intro']": 'updateCharLimit',
+      "keydown input[name='location']": 'updateSpinner'
+    },
+
+    updateSpinner: function() {
+      var length = this.$("input[name='location']").val().length;
+      if (length >= 3) {
+        this.$('.twitter-typeahead').addClass('autocomplete-loading');
+      }
     },
 
     updateCharLimit: function() {
@@ -74,6 +82,20 @@
 
     render: function() {
       this.$el.html(this.template());
+
+      var onComplete = _.bind(function(e) {
+        this.$('.twitter-typeahead')
+        .removeClass('autocomplete-loading');}, this);
+
+      this.$('.twitter-typeahead').typeahead({
+        name: 'cities',
+        remote: {
+          url: 'http://gd.geobytes.com/AutoCompleteCity?callback=?&q=%QUERY',
+          complete: onComplete
+        },
+        limit: 2,
+      });
+
       return this;
     }
 
