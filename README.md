@@ -19,7 +19,15 @@ Once there's a match, you will receive an email containing a link to a private g
 
 > What's your motivation?
 
-I'm currently taking two MOOC's on Coursera, and I find it difficult to form study groups with classmates to collaborate with in real-time.
+I'm currently taking two MOOC's on Coursera, and I find it difficult to form study groups with classmates to collaborate with in real-time. Coordination is a nightmare. So I thought - why can't someone else organize the groups for us? In school, study groups are formed in 1 of 2 ways:
+
+1) You pick your group (and hope that you get picked).
+
+2) Your teacher assigns you to a group.
+
+For online classes with thousands of students from all around the world, `1` is clearly difficult, but not impossible. It's how people are forming study groups on MOOCs, through platforms like Facebook and Meetup.
+
+`2` is ideal. It removes the responsibility of trying to organize from the student. But who's the teacher? That's where MooCollab comes in.
 
 > What do you mean by collaboration?
 
