@@ -1,4 +1,23 @@
-###MooCollab
+### MooCollab
+
+#### How it works
+
+**Step 1**
+
+Click the `Find me a group` button and fill out your profile.
+
+**Step 2**
+
+Based on your information, our system will try to match you with two other classmates.
+
+**Step 3**
+
+Once there's a match, you will receive an email containing a link to a private group page containing further instructions.
+
+
+#### FAQ
+
+> What's your motivation?
 
 I'm currently taking two MOOC's on Coursera, and I find it difficult to form study groups with classmates to collaborate with in real-time.
 
@@ -35,3 +54,5 @@ So planning a study session successfully on Meetup is no simple feat. And much o
 Basically, take the pain of forming both online and offline study groups out of the hands of students. Students should not feel like event organizers. 
 
 MooCollab will be achieve this goal by simplifying the process of forming study groups, finding existing ones, and staying connected with fellow classmates.
+
+
