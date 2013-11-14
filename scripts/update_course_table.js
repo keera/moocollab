@@ -2,9 +2,12 @@ var https = require('https');
 var Sequelize = require("sequelize");
 var settings = require('../settings');
 
-var sqlz = new Sequelize(settings.dbname, settings.dbuser, settings.dbpass, {
-  dialect: 'mysql'
-});
+var sqlz = new Sequelize(
+  settings.dbname,
+  settings.dbuser,
+  settings.dbpass,
+  {dialect: 'mysql'}
+);
 
 // Define models
 var course = sqlz.define('course', {
@@ -39,7 +42,6 @@ function storeCourseData(provider_id) {
   var data = '';
 
   https.get(url, function(res) {
-
     console.log("Got response: " + res.statusCode);
 
     res.on('data', function(chunk) {
@@ -48,20 +50,23 @@ function storeCourseData(provider_id) {
 
     res.on('end', function() {
       var content = JSON.parse(data);
+
       for (var i in content.topics) {
         var course_title = content.topics[i].name;
-        course.findOrCreate({name: course_title},{provider_id: provider_id}).success(function(course, created){
+        course.findOrCreate({name: course_title}, {provider_id: provider_id})
+          .success(function(course, created) {
+            if (course) {
+              console.log(created.name + ' already exists');
+            } else if (created) {
+              console.log('Course created: ' + course.name);
+            } else {
+              console.log('creation failed');
+            }
 
-          if (course) {
-            console.log(created.name + ' already exists');
-          } else if (created) {
-            console.log('Course created: ' + course.name);
-          } else {
-            console.log('error');
-          }
-        }).error(function(error){
-          console.log(error);
-        });
+          }).error(function(error) {
+            console.log(error);
+          });
+
       }
     });
 
@@ -71,7 +76,9 @@ function storeCourseData(provider_id) {
 
 }
 
-provider.findOrCreate({name: 'Coursera'}).success(function(provider, created){
+// Doesn't seem to be a way to specify columns using findOrCreate
+// Kick off the fetch and insert process
+provider.findOrCreate({name: 'Coursera'}).success(function(provider, created) {
   var provider_name = 'Coursera';
   var provider_id = null;
 
@@ -79,12 +86,14 @@ provider.findOrCreate({name: 'Coursera'}).success(function(provider, created){
     provider_id = provider.provider_id;
   } else if (created) {
     provider_id = created.provider_id;
+  } else {
+    console.log('creation failed');
   }
 
   if (provider_id) {
     storeCourseData(provider_id);
   }
-}).error(function(error){
+}).error(function(error) {
   console.log(error);
 });
 
