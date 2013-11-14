@@ -93,6 +93,7 @@ provider.findOrCreate({name: 'Coursera'}).success(function(provider, created) {
   if (provider_id) {
     storeCourseData(provider_id);
   }
+
 }).error(function(error) {
   console.log(error);
 });
