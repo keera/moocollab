@@ -75,22 +75,46 @@
     render: function() {
       this.$el.html(this.template());
 
-      var onComplete = _.bind(function(e) {
-        this.$('.twitter-typeahead')
-        .removeClass('autocomplete-loading');}, this);
+      var $locationTypeaheadEl = this.$("input[name='location'].twitter-typeahead");
+      var $courseTypeaheadEl = this.$("input[name='course'].twitter-typeahead");
 
-      var beforeSend = _.bind(function(e) {
-        this.$('.twitter-typeahead')
-        .addClass('autocomplete-loading');}, this);
-
-      this.$('.twitter-typeahead').typeahead({
+      $locationTypeaheadEl.typeahead({
         name: 'cities',
+        template: Handlebars.compile("<p>{{value}} <span class='glyphicon glyphicon-globe'></span></p>"),
         remote: {
           url: 'http://gd.geobytes.com/AutoCompleteCity?callback=?&q=%QUERY',
-          beforeSend: beforeSend,
-          complete: onComplete
+          beforeSend: _.bind(function(e) {
+            $locationTypeaheadEl
+            .addClass('autocomplete-loading');}, this),
+          complete: _.bind(function(e) {
+            $locationTypeaheadEl
+            .removeClass('autocomplete-loading');}, this),
+          filter: function(res) {
+            // Geobytes returns empty object on no-result
+            // Gets mistaken by typeahead as a valid result
+            if (res.length > 0 && res[0].length)
+              return res;
+            return [];
+          }
         },
-        limit: 2,
+        limit: 5,
+      });
+
+      // https://github.com/twitter/typeahead.js/issues/492
+      $courseTypeaheadEl.typeahead({
+        name: 'courses',
+        valueKey: 'name',
+        template: Handlebars.compile("<p>{{name}} <span class='label label-default'>{{provider.name}}</p>"),
+        remote: {
+          url: 'course/%QUERY',
+          beforeSend: _.bind(function(e) {
+            $courseTypeaheadEl
+            .addClass('autocomplete-loading');}, this),
+          complete: _.bind(function(e) {
+            $courseTypeaheadEl
+            .removeClass('autocomplete-loading');}, this)
+        },
+        limit: 5,
       });
 
       return this;
