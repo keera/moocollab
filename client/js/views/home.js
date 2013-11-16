@@ -16,22 +16,23 @@
         .val()
         .length;
       var remaining = 256 - length;
+      var $countdownEl = this.$('.countdown');
 
       if (remaining < 128 && remaining >= 64) {
-        this.$('.countdown')
+        $countdownEl
           .removeClass('label-info label-danger')
           .addClass('label-warning');
       } else if (remaining < 64) {
-        this.$('.countdown')
+        $countdownEl
           .removeClass('label-info label-warning')
           .addClass('label-danger');
       } else {
-        this.$('.countdown')
+        $countdownEl
           .removeClass('label-warning label-danger')
           .addClass('label-info');
       }
 
-      this.$('.countdown').html(remaining + ' characters remaining');
+      $countdownEl.html(remaining + ' characters remaining');
     },
 
     submitForm: function() {
