@@ -83,12 +83,12 @@
         template: Handlebars.compile("<p>{{value}} <span class='glyphicon glyphicon-globe'></span></p>"),
         remote: {
           url: 'http://gd.geobytes.com/AutoCompleteCity?callback=?&q=%QUERY',
-          beforeSend: _.bind(function(e) {
+          beforeSend: function(e) {
             $locationTypeaheadEl
-            .addClass('autocomplete-loading');}, this),
-          complete: _.bind(function(e) {
+            .addClass('autocomplete-loading');},
+          complete: function(e) {
             $locationTypeaheadEl
-            .removeClass('autocomplete-loading');}, this),
+            .removeClass('autocomplete-loading');},
           filter: function(res) {
             // Geobytes returns empty object on no-result
             // Gets mistaken by typeahead as a valid result
@@ -107,12 +107,12 @@
         template: Handlebars.compile("<p>{{name}} <span class='label label-default'>{{provider.name}}</p>"),
         remote: {
           url: 'course/%QUERY',
-          beforeSend: _.bind(function(e) {
+          beforeSend: function(e) {
             $courseTypeaheadEl
-            .addClass('autocomplete-loading');}, this),
-          complete: _.bind(function(e) {
+            .addClass('autocomplete-loading');},
+          complete: function(e) {
             $courseTypeaheadEl
-            .removeClass('autocomplete-loading');}, this)
+            .removeClass('autocomplete-loading');}
         },
         limit: 5,
       });
