@@ -6,8 +6,7 @@
     default: {
       email: '',
       course: '',
-      location: '',
-      displayname: '',
+      display_name: '',
       intro: '',
     },
 
@@ -18,18 +17,14 @@
         errors.course = 'Course is required';
       }
 
-      if (attrs.location.length == 0) {
-        errors.location = 'Location is required';
-      }
-
       if (attrs.email.length == 0) {
         errors.email = 'Email is required';
       } else if (!/^\S+@\S+$/.test(attrs.email)) {
         errors.email = 'Please enter a valid email';
       }
 
-      if (attrs.displayname.length == 0) {
-        errors.displayname = 'Display name is required';
+      if (attrs.display_name.length == 0) {
+        errors.display_name = 'Display name is required';
       }
 
       if (attrs.intro.length == 0) {
@@ -40,6 +35,8 @@
 
       return errors;
     },
+
+    url: 'signup'
 
   });
 

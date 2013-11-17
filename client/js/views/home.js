@@ -40,15 +40,13 @@
 
       fields.email = this.$("input[name='email']");
       fields.course = this.$("input[name='course']");
-      fields.location = this.$("input[name='location']");
-      fields.displayname = this.$("input[name='displayname']");
+      fields.display_name = this.$("input[name='displayname']");
       fields.intro = this.$("textarea[name='intro']");
 
       var data = {
         course: fields.course.val().trim(),
-        location: fields.location.val().trim(),
         email: fields.email.val().trim(),
-        displayname: fields.displayname.val().trim(),
+        display_name: fields.display_name.val().trim(),
         intro: fields.intro.val().trim()
       };
 
@@ -68,38 +66,23 @@
       }
 
       if (!containsErrors) {
-        alert("submit!");
+        var options = {
+          success: function(model,res, options) {
+            console.log('win');
+          },
+          error: function(model, res, options) {
+            console.log('fail');
+          },
+          validate: false
+        }
+        newForm.save(data, options);
       }
 
     },
 
     render: function() {
       this.$el.html(this.template());
-
-      var $locationTypeaheadEl = this.$("input[name='location'].twitter-typeahead");
       var $courseTypeaheadEl = this.$("input[name='course'].twitter-typeahead");
-
-      $locationTypeaheadEl.typeahead({
-        name: 'cities',
-        template: Handlebars.compile("<p>{{value}} <span class='glyphicon glyphicon-globe'></span></p>"),
-        remote: {
-          url: 'http://gd.geobytes.com/AutoCompleteCity?callback=?&q=%QUERY',
-          beforeSend: function(e) {
-            $locationTypeaheadEl
-            .addClass('autocomplete-loading');},
-          complete: function(e) {
-            $locationTypeaheadEl
-            .removeClass('autocomplete-loading');},
-          filter: function(res) {
-            // Geobytes returns empty object on no-result
-            // Gets mistaken by typeahead as a valid result
-            if (res.length > 0 && res[0].length)
-              return res;
-            return [];
-          }
-        },
-        limit: 5,
-      });
 
       // https://github.com/twitter/typeahead.js/issues/492
       $courseTypeaheadEl.typeahead({
