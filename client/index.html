@@ -266,21 +266,28 @@
     </div><!-- /.modal -->
 </script>
 
-
 <script id="about" type="text/x-handlebars-template">
-<div class="page-header">
-    <h1>Story</h1>
-</div>
-<p>I've taken several MOOC's on Coursera, and it's a pain trying to form a study group with classmates to collaborate with in real-time. Coordination is often nightmare. So I thought - why do I have to struggle with this? <strong>Why can't someone else organize the groups for me?</strong></p>
-<p>In school, study groups are formed in 1 of 2 ways:</p>
-<ol>
-    <li><p>You pick your group.</p></li>
-    <li><p>Your teacher assigns you to a group.</p></li>
-</ol>
-<p>For online classes with thousands of students from all around the world, <span class="label label-info">1</span> is clearly difficult, but not impossible. It's how people are currently forming study groups on MOOCs, through platforms like Facebook and Meetup.</p>
-<p><span class="label label-info">2</span> is ideal. It removes the responsibility of trying to organize from the student. <strong>So who's playing the teacher?</strong></p>
-<p>That's where <strong>MooCollab</strong> comes in!</p>
+    <div class="page-header">
+        <h1>Story</h1>
+    </div>
+    <p>I've taken several MOOC's on Coursera, and it's a pain trying to form a study group with classmates to collaborate with in real-time. Coordination is often nightmare. So I thought - why do I have to struggle with this? <strong>Why can't someone else organize the groups for me?</strong></p>
+    <p>In school, study groups are formed in 1 of 2 ways:</p>
+    <ol>
+        <li><p>You pick your group.</p></li>
+        <li><p>Your teacher assigns you to a group.</p></li>
+    </ol>
+    <p>For online classes with thousands of students from all around the world, <span class="label label-info">1</span> is clearly difficult, but not impossible. It's how people are currently forming study groups on MOOCs, through platforms like Facebook and Meetup.</p>
+    <p><span class="label label-info">2</span> is ideal. It removes the responsibility of trying to organize from the student. <strong>So who's playing the teacher?</strong></p>
+    <p>That's where <strong>MooCollab</strong> comes in!</p>
 </script>
+
+<script id="alert" type="text/x-handlebars-template">
+    <div class="alert alert-success alert-dismissable">
+      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+      <strong>Got it!</strong> Once you're successfully matched with a group, we'll send you an email with further instructions!
+    </div>
+</script>
+
 </body>
 <script type="text/javascript" src="bower_components/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -291,6 +298,7 @@
 <script type="text/javascript" src="js/init.js"></script>
 <script type="text/javascript" src="js/router.js"></script>
 <script type="text/javascript" src="js/models/form.js"></script>
+<script type="text/javascript" src="js/views/alert.js"></script>
 <script type="text/javascript" src="js/views/home.js"></script>
 <script type="text/javascript" src="js/views/about.js"></script>
 <script type="text/javascript" src="js/views/main.js"></script>

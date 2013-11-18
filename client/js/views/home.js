@@ -76,6 +76,9 @@
           validate: false
         }
         newForm.save(data, options);
+
+        $('#myModal').modal('hide');
+        (new MC.Views.Alert()).render();
       }
 
     },
