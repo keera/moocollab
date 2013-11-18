@@ -1,19 +1,19 @@
 var settings = require('./settings');
 var Sequelize = require('./server/models');
-var Signup = require('./server/signup');
+var GroupAssign = require('./server/group_assign');
 var express = require('express');
-var app = express();
 
+var app = express();
 app.use(express.bodyParser());
-// Set the public folder
 app.use(express.static(__dirname + '/client'));
 
 app.get('/', function(req, res) {
   res.status(200).sendfile('index.html');
 });
 
+// Group assignment
 app.post('/signup', function(req, res) {
-  Signup(req, res);
+  GroupAssign.assign(req, res);
 });
 
 // Course search
