@@ -2,11 +2,18 @@
   "use strict"
 
   MC.Router = Backbone.Router.extend({
-    // Nothing here yet
+
     routes: {
+      ""     : "home",
+      "about": "about"
     },
 
     about: function() {
+      (new MC.Views.About()).render();
+    },
+
+    home: function() {
+      (new MC.Views.Home()).render();
     }
 
   });

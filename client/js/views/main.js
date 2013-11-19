@@ -6,13 +6,13 @@
 
     el: '#main',
 
-    initialize: function() {
-      this.render();
+    events: {
+      'click .home': 'updateHomeTab',
+      'click .about': 'updateAboutTab'
     },
 
-    events: {
-      'click .home': 'home',
-      'click .about': 'about'
+    initialize: function() {
+      this.updateHomeTab();
     },
 
     updateTab: function(current) {
@@ -24,22 +24,14 @@
         .addClass('active');
     },
 
-    home: function() {
+    updateHomeTab: function() {
       this.updateTab('home');
-      (new MC.Views.Home()).render();
     },
 
-    about: function() {
+    updateAboutTab: function() {
       this.updateTab('about');
-      (new MC.Views.About()).render();
     },
-
-    render: function() {
-      this.home();
-      return this;
-    }
 
   });
-
 
 })();

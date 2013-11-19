@@ -3,7 +3,7 @@
   "use strict"
   // Create our global app object
   var MC = {
-    Views: {},
+    Views : {},
     Models: {},
     router: null
   }
