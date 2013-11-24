@@ -1,39 +1,5 @@
 var https = require('https');
-var Sequelize = require("sequelize");
-var settings = require('../settings');
-
-var sqlz = new Sequelize(
-  settings.dbname,
-  settings.dbuser,
-  settings.dbpass,
-  {dialect: 'mysql'}
-);
-
-// Define models
-var course = sqlz.define('course', {
-  course_id: {
-    type: Sequelize.INTEGER,
-    autoIncrement: true,
-    primaryKey: true
-  },
-  name: Sequelize.STRING,
-  provider_id: Sequelize.INTEGER
-}, {
-  freezeTableName: true,
-  timestamps: false
-});
-
-var provider = sqlz.define('provider', {
-  provider_id: {
-    type: Sequelize.INTEGER,
-    autoIncrement: true,
-    primaryKey: true
-  },
-  name: Sequelize.STRING
-}, {
-  freezeTableName: true,
-  timestamps: false
-});
+var Models = require('../server/models');
 
 function storeCourseData(provider_id) {
   // Makes an API call to json endpoint that returns all course related data
@@ -53,7 +19,7 @@ function storeCourseData(provider_id) {
 
       for (var i in content.topics) {
         var course_title = content.topics[i].name;
-        course.findOrCreate({name: course_title}, {provider_id: provider_id})
+        Models.Course.findOrCreate({name: course_title}, {provider_id: provider_id})
           .success(function(course, created) {
             if (course) {
               console.log(created.name + ' already exists');
@@ -78,7 +44,7 @@ function storeCourseData(provider_id) {
 
 // Doesn't seem to be a way to specify columns using findOrCreate
 // Kick off the fetch and insert process
-provider.findOrCreate({name: 'Coursera'}).success(function(provider, created) {
+Models.Provider.findOrCreate({name: 'Coursera'}).success(function(provider, created) {
   var provider_name = 'Coursera';
   var provider_id = null;
 

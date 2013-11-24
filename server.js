@@ -1,4 +1,3 @@
-var settings = require('./settings');
 var Sequelize = require('./server/models');
 var GroupAssign = require('./server/group_assign');
 var express = require('express');
@@ -25,6 +24,8 @@ app.get('/course/:name', function(req, res) {
     where: ["course.name LIKE ?", '%' + req.params.name + '%'],
     limit: 5}).success(function(courses) {
       res.json(200, courses);
+  }).error(function(error) {
+    console.log(error);
   });
 });
 

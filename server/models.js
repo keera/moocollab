@@ -1,7 +1,14 @@
 var Sequelize = require("sequelize");
-var settings = require('../settings');
 
-var sqlz = new Sequelize(settings.dbname, settings.dbuser, settings.dbpass, {
+var host = process.env.RDS_HOSTNAME || '127.0.0.1';
+var dbname = 'moocollab';
+var dbuser = process.env.RDS_USERNAME || 'root';
+var dbpass = process.env.RDS_PASSWORD || 'root';
+var port = process.env.RDS_PORT || '3306';
+
+var sqlz = new Sequelize(dbname, dbuser, dbpass, {
+  host: host,
+  port: port,
   dialect: 'mysql',
   omitNull: true
 });
