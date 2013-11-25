@@ -6,11 +6,11 @@ var app = express();
 
 app.set('port', process.env.PORT || 3000);
 app.use(express.bodyParser());
-app.use(express.static(__dirname + '/client'));
+// app.use(express.static(__dirname + '/client'));
 
-app.get('/', function(req, res) {
+/*app.get('/', function(req, res) {
   res.status(200).sendfile('index.html');
-});
+});*/
 
 // Group assignment
 app.post('/signup', function(req, res) {
