@@ -1,7 +1,7 @@
 var Sequelize = require("sequelize");
 
 var host = process.env.RDS_HOSTNAME || '127.0.0.1';
-var dbname = process.env.PARAM1 || 'ebdb';
+var dbname = process.env.DBName || 'wrong';
 var dbuser = process.env.RDS_USERNAME || 'root';
 var dbpass = process.env.RDS_PASSWORD || 'root';
 var port = process.env.RDS_PORT || '3306';
