@@ -8,6 +8,7 @@
   "dependencies": {
     "express": "3.4.4",
     "sequelize": "2.0.0-beta.1",
-    "mysql": "2.0.0-alpha8"
+    "mysql": "2.0.0-alpha8",
+    "sendgrid": "0.4.4"
   }
 }
