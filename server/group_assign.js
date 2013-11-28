@@ -1,4 +1,28 @@
 var Sequelize = require('./models');
+var Sendgrid = require('sendgrid');
+// Email env values
+var sendgrid_username = process.env.SENDGRID_USERNAME;
+var sendgrid_password = process.env.SENDGRID_PASSWORD;
+var to = process.env.DEFAULT_TO;
+
+Sendgrid = Sendgrid(sendgrid_username, sendgrid_password);
+
+var sendEmail = function() {
+  var email = new Sendgrid.Email();
+  email.addTo(to);
+  email.setFrom(to);
+  email.setSubject('Congrats');
+  email.setText('Owl are you doing?');
+  email.setHtml('<strong>%how% are you doing bro?</strong>');
+  email.addSubVal("%how%", "Owl");
+  email.addHeaders({'X-Sent-Using': 'SendGrid-API'});
+  email.addHeaders({'X-Transport': 'web'});
+
+  Sendgrid.send(email, function(err, json) {
+    if (err) { return console.error(err); }
+    console.log(json);
+  });
+};
 
 // Create a group for the user
 var createNewUserGroup = function(req, res, user_id, course_id) {
@@ -18,7 +42,7 @@ var createNewUserGroup = function(req, res, user_id, course_id) {
     console.log(error);
     res.send(500, "Error: Create group");
   });
-}
+};
 
 // Add user to an existing group
 var addToExistingGroup = function(req, res, user_id,
@@ -46,7 +70,7 @@ var addToExistingGroup = function(req, res, user_id,
     console.log(error);
     res.send(500, "Error: Add to existing group");
   });
-}
+};
 
 // Find available groups
 var findAvailableGroups = function(req, res, user_id, course_id) {
@@ -76,7 +100,7 @@ var findAvailableGroups = function(req, res, user_id, course_id) {
   }).error(function(error) {
     res.send(500, 'Error: Find existing group');
   });
-}
+};
 
 // Add user to a group
 var addToGroup = function(req, res, user_id, course_name) {
@@ -103,7 +127,7 @@ var addToGroup = function(req, res, user_id, course_name) {
   }).error(function(error) {
     res.send(500, 'Error: Find course');
   });
-}
+};
 
 // Kick off signup process
 var assign = function(req, res) {
@@ -125,6 +149,7 @@ var assign = function(req, res) {
         intro: userIntro,
         display_name: userDisplayName
       }).success(function(user) {
+        sendEmail(); // Testing
         addToGroup(req, res, user.user_id, userCourse);
       }).error(function(error) {
         console.log(error);
@@ -134,6 +159,6 @@ var assign = function(req, res) {
   }).error(function(error) {
     res.send(500, 'Error: Find user');
   });
-}
+};
 
 module.exports.assign = assign;
