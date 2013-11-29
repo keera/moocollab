@@ -66,19 +66,28 @@
       }
 
       if (!containsErrors) {
+        var $formLoaderEl = this.$('.processing-loader');
+        var minDelay = 500; // ms
+        $formLoaderEl.addClass('form-processing');
         var options = {
-          success: function(model,res, options) {
-            console.log('win');
+          success: function(model, res, options) {
+            var currTime = (new Date()).getTime();
+            var diff = currTime - options.timeSent;
+            // Play delay animation :)
+            setTimeout(function() {
+              $formLoaderEl.removeClass('form-processing');
+              $('#myModal').modal('hide');
+              (new MC.Views.Alert()).render();
+            }, (diff < minDelay) ? minDelay - diff : 0);
           },
           error: function(model, res, options) {
-            console.log('fail');
+            $formLoaderEl.removeClass('form-processing');
+            alert("Something went wrong");
           },
-          validate: false
+          validate: false,
+          timeSent: (new Date()).getTime()
         }
         newForm.save(data, options);
-
-        $('#myModal').modal('hide');
-        (new MC.Views.Alert()).render();
       }
 
     },

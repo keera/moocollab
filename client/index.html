@@ -106,6 +106,20 @@
             background-position: right center;
         }
 
+        .processing-loader {
+            position: absolute;
+            bottom: 50%;
+            left: 42%;
+            width: 83px;
+            height: 65px;
+        }
+
+        .form-processing {
+            background: white url('images/processing.gif');
+            background-repeat: no-repeat;
+            background-position: center;
+         }
+
         .twitter-typeahead .tt-query,
         .twitter-typeahead .tt-hint {
             margin-bottom: 0;
@@ -261,6 +275,7 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button id="submit" type="button" class="btn btn-primary">Submit</button>
                 </div>
+                <div class="processing-loader"></div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
