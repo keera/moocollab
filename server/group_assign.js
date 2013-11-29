@@ -7,17 +7,35 @@ var to = process.env.DEFAULT_TO;
 
 Sendgrid = Sendgrid(sendgrid_username, sendgrid_password);
 
-var sendEmail = function() {
+var sendConfirmationEmail = function(recipients) {
+  var toEmails = recipients.map(function(val) {
+    return val.email;
+  });
+  var displayNames = recipients.map(function(val) {
+    return val.display_name;
+  });
+
   var email = new Sendgrid.Email();
-  email.addTo(to);
-  email.setFrom(to);
-  email.setSubject('Congrats');
-  email.setText('Owl are you doing?');
-  email.setHtml('<strong>%how% are you doing bro?</strong>');
-  email.addSubVal("%how%", "Owl");
+  var html = '<p>Hey there %display_name%,</p>' +
+  '<p>Great news! We just matched you with study group ' +
+  'for the course <strong>Introduction to Ninjitsu</strong>.</p>' +
+  '<p>If you wish the join the group, please ' +
+  '<strong>confirm</strong> by clicking the the link below.</p>' +
+  '<a href="http://www.moocollab.com">Yes, I want to join the group!</a>' +
+  '<p>If not, no problem! Just ignore this message. No hard feelings :)</p>' +
+  '<p>Thanks,</p>'+
+  '</p>MooCollab</p>';
+  email.addTo(toEmails);
+  email.setFrom('lingramming@gmail.com');
+  email.setSubject('We found a study group for you!');
+  email.setHtml(html);
+  email.setUniqueArgs({
+    group_id: '1789',
+    course_name: 'Introduction to Ninjitsu'
+  });
+  email.addSubVal("%display_name%", displayNames);
   email.addHeaders({'X-Sent-Using': 'SendGrid-API'});
   email.addHeaders({'X-Transport': 'web'});
-
   Sendgrid.send(email, function(err, json) {
     if (err) { return console.error(err); }
     console.log(json);
@@ -44,11 +62,32 @@ var createNewUserGroup = function(req, res, user_id, course_id) {
   });
 };
 
+// Send email to group
+var emailGroupConfirmation = function(req, res, group_id) {
+  Sequelize.GroupUser.findAll({
+    include: [Sequelize.User],
+    where: ["group_user.group_id = ? AND group_user.user_confirm_send_date IS NULL",
+      group_id]
+  }).success(function(groupUsers) {
+    var recipients = [];
+    for (var i in groupUsers) {
+      var user = groupUsers[i].user;
+      recipients.push({
+        email: user.email,
+        display_name: user.display_name
+      });
+    }
+    sendConfirmationEmail(recipients);
+  }).error(function(error) {
+    // Failed to get users
+    console.log(error);
+  });
+};
+
 // Add user to an existing group
 var addToExistingGroup = function(req, res, user_id,
   group_id, group_size) {
-
-  Sequelize.GroupUser.create({
+Sequelize.GroupUser.create({
     user_id: user_id,
     group_id: group_id
   }).success(function(groupUser) {
@@ -56,9 +95,9 @@ var addToExistingGroup = function(req, res, user_id,
       where: ["group_id = ?", group_id]
     }).success(function(count) {
       console.log("New user count: " + count);
+      // We have a group
       if (count == group_size) {
-        // Our email code
-        console.log("Woot, got a group. Sending emails");
+        emailGroupConfirmation(req, res, group_id);
       }
     }).error(function(error) {
       // Log count fail
@@ -149,7 +188,6 @@ var assign = function(req, res) {
         intro: userIntro,
         display_name: userDisplayName
       }).success(function(user) {
-        sendEmail(); // Testing
         addToGroup(req, res, user.user_id, userCourse);
       }).error(function(error) {
         console.log(error);

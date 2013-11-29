@@ -96,6 +96,7 @@ var GroupUser = sqlz.define('group_user', {
 });
 
 GroupUser.belongsTo(Group, {foreignKey: 'group_id'});
+GroupUser.belongsTo(User, {foreignKey: 'user_id'});
 Course.belongsTo(Provider, {foreignKey: 'provider_id'});
 
 module.exports.User = User;
