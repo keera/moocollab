@@ -51,7 +51,7 @@ var createNewUserGroup = function(req, res, user_id, course_id) {
       user_id: user_id,
       group_id: group.group_id
     }).success(function(groupUser) {
-      res.send(200, "Success: Create new group with user");
+      res.json(200, {Success: "Create new group with user"});
     }).error(function(error) {
       console.log(error);
       res.send(500, "Error: Create group user");
@@ -103,7 +103,7 @@ Sequelize.GroupUser.create({
       // Log count fail
       console.log(error);
     });
-    res.send(200, "Success: Add to existing group");
+    res.json(200, {Success: "Add to existing group"});
   }).error(function(error) {
     // Log these
     console.log(error);
