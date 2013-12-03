@@ -200,10 +200,8 @@ var assign = function(req, res) {
   var userIntro = req.body.intro;
   var userDisplayName = req.body.display_name;
   var userCourse = req.body.course;
-  var user_id;
-  var data = {
-    course_name: userCourse
-  };
+  var data = {course_name: userCourse};
+
   Sequelize.User.find({
     where: {email: userEmail}
   }).success(function(user) {
