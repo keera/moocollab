@@ -1,4 +1,3 @@
-
 (function (window, undefined) {
   "use strict"
   // Create our global app object
@@ -18,3 +17,4 @@
   window.MC = MC;
 
 })(window);
+
