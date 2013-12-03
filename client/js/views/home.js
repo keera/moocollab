@@ -66,8 +66,8 @@
       }
 
       if (!containsErrors) {
-        var $formLoaderEl = this.$('.processing-loader');
-        var minDelay = 500; // ms
+        var $formLoaderEl = this.$('.processing-loader').show();
+        var minDelay = 1000; // ms
         $formLoaderEl.addClass('form-processing');
         var options = {
           success: function(model, res, options) {
@@ -76,12 +76,14 @@
             // Play delay animation :)
             setTimeout(function() {
               $formLoaderEl.removeClass('form-processing');
+              $formLoaderEl.hide();
               $('#myModal').modal('hide');
               (new MC.Views.Alert()).render();
             }, (diff < minDelay) ? minDelay - diff : 0);
           },
           error: function(model, res, options) {
             $formLoaderEl.removeClass('form-processing');
+            $formLoaderEl.hide();
             alert("Something went wrong");
           },
           validate: false,
