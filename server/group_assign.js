@@ -7,7 +7,10 @@ var to = process.env.DEFAULT_TO;
 
 Sendgrid = Sendgrid(sendgrid_username, sendgrid_password);
 
-var sendConfirmationEmail = function(recipients) {
+var sendConfirmationEmail = function(data) {
+  var recipients = data.recipients ||
+    [{email: "admin@moocollab.com", display_name: "boss"}];
+  var course_name = data.course_name || "Introduction to Taijitsu";
   var toEmails = recipients.map(function(val) {
     return val.email;
   });
@@ -16,17 +19,19 @@ var sendConfirmationEmail = function(recipients) {
   });
 
   var email = new Sendgrid.Email();
+  var fromEmail = 'admin@moocollab.com';
   var html = '<p>Hey there %display_name%,</p>' +
   '<p>Great news! We just matched you with study group ' +
-  'for the course <strong>Introduction to Ninjitsu</strong>.</p>' +
+  'for the course <strong>' + course_name + '</strong>.</p>' +
   '<p>If you wish the join the group, please ' +
   '<strong>confirm</strong> by clicking the the link below.</p>' +
   '<a href="http://www.moocollab.com">Yes, I want to join the group!</a>' +
   '<p>If not, no problem! Just ignore this message. No hard feelings :)</p>' +
   '<p>Thanks,</p>'+
   '</p>MooCollab</p>';
+
   email.addTo(toEmails);
-  email.setFrom('lingramming@gmail.com');
+  email.setFrom(fromEmail);
   email.setSubject('We found a study group for you!');
   email.setHtml(html);
   email.setUniqueArgs({
@@ -37,13 +42,43 @@ var sendConfirmationEmail = function(recipients) {
   email.addHeaders({'X-Sent-Using': 'SendGrid-API'});
   email.addHeaders({'X-Transport': 'web'});
   Sendgrid.send(email, function(err, json) {
-    if (err) { return console.error(err); }
+    if (err) {
+      return console.error(err);
+    }
     console.log(json);
   });
 };
 
+// Send email to group
+var emailGroupConfirmation = function(req, res, data) {
+  var group_id = data.group_id || 0;
+
+  Sequelize.GroupUser.findAll({
+    include: [Sequelize.User],
+    where: ["group_user.group_id = ? AND group_user.user_confirm_send_date IS NULL",
+      group_id]
+  }).success(function(groupUsers) {
+    var recipients = [];
+    for (var i in groupUsers) {
+      var user = groupUsers[i].user;
+      recipients.push({
+        email: user.email,
+        display_name: user.display_name
+      });
+    }
+    data.recipients = recipients;
+    sendConfirmationEmail(data);
+  }).error(function(error) {
+    // Failed to get users
+    console.log(error);
+  });
+};
+
 // Create a group for the user
-var createNewUserGroup = function(req, res, user_id, course_id) {
+var createNewUserGroup = function(req, res, data) {
+  var user_id = data.user_id || 0;
+  var course_id = data.course_id || 0;
+
   Sequelize.Group.create({
     course_id: course_id
   }).success(function(group) {
@@ -62,34 +97,17 @@ var createNewUserGroup = function(req, res, user_id, course_id) {
   });
 };
 
-// Send email to group
-var emailGroupConfirmation = function(req, res, group_id) {
-  Sequelize.GroupUser.findAll({
-    include: [Sequelize.User],
-    where: ["group_user.group_id = ? AND group_user.user_confirm_send_date IS NULL",
-      group_id]
-  }).success(function(groupUsers) {
-    var recipients = [];
-    for (var i in groupUsers) {
-      var user = groupUsers[i].user;
-      recipients.push({
-        email: user.email,
-        display_name: user.display_name
-      });
-    }
-    sendConfirmationEmail(recipients);
-  }).error(function(error) {
-    // Failed to get users
-    console.log(error);
-  });
-};
+
 
 // Add user to an existing group
-var addToExistingGroup = function(req, res, user_id,
-  group_id, group_size) {
-Sequelize.GroupUser.create({
-    user_id: user_id,
-    group_id: group_id
+var addToExistingGroup = function(req, res, data) {
+  var user_id = data.user_id || 0;
+  var group_id = data.group_id || 0;
+  var group_size = data.group_size || 0;
+
+  Sequelize.GroupUser.create({
+      user_id: user_id,
+      group_id: group_id
   }).success(function(groupUser) {
     Sequelize.GroupUser.count({
       where: ["group_id = ?", group_id]
@@ -97,7 +115,7 @@ Sequelize.GroupUser.create({
       console.log("New user count: " + count);
       // We have a group
       if (count == group_size) {
-        emailGroupConfirmation(req, res, group_id);
+        emailGroupConfirmation(req, res, data);
       }
     }).error(function(error) {
       // Log count fail
@@ -107,12 +125,14 @@ Sequelize.GroupUser.create({
   }).error(function(error) {
     // Log these
     console.log(error);
-    res.send(500, "Error: Add to existing group");
+    res.json(500, {error: "Add to existing group"});
   });
 };
 
 // Find available groups
-var findAvailableGroups = function(req, res, user_id, course_id) {
+var findAvailableGroups = function(req, res, data) {
+  var user_id = data.user_id || 0;
+  var course_id = data.course_id || 0;
   var query = "SELECT `group`.group_id, COUNT(*) AS numUsers, `group`.max_size " +
     "FROM group_user JOIN `group` " +
     "ON group_user.group_id = `group`.group_id " +
@@ -127,14 +147,14 @@ var findAvailableGroups = function(req, res, user_id, course_id) {
     if (groups.length) {
       console.log('Groups found!');
       console.log(groups);
-      var joinGroup = groups[0]; // Get first one
-      var group_id = joinGroup.group_id;
-      var group_maxSize = joinGroup.max_size;
-
-      addToExistingGroup(req, res, user_id, group_id, group_maxSize);
+      // Get first one
+      var joinGroup = groups[0];
+      data.group_id = joinGroup.group_id;
+      data.group_size = joinGroup.max_size;
+      addToExistingGroup(req, res, data);
     } else {
       console.log('No groups. Time to create!');
-      createNewUserGroup(req, res, user_id, course_id);
+      createNewUserGroup(req, res, data);
     }
   }).error(function(error) {
     res.send(500, 'Error: Find existing group');
@@ -142,7 +162,10 @@ var findAvailableGroups = function(req, res, user_id, course_id) {
 };
 
 // Add user to a group
-var addToGroup = function(req, res, user_id, course_name) {
+var addToGroup = function(req, res, data) {
+  var user_id = data.user_id || 0;
+  var course_name = data.course_name || "test";
+
   Sequelize.Course.find({
     where: {name: course_name}
   }).success(function(course) {
@@ -153,42 +176,48 @@ var addToGroup = function(req, res, user_id, course_name) {
         where: ["group_user.user_id = ? AND group.course_id = ?",
           user_id,
           course.course_id
-        ]}).success(function(groupUser) {
-          if (groupUser) {
-            res.send(409, "Conflict: User already in a group for that class");
-          } else {
-            findAvailableGroups(req, res, user_id, course.course_id);
-          }
+        ]
+      }).success(function(groupUser) {
+        if (groupUser) {
+          console.log("User already in a group for that class");
+          res.json(409, {error: "User already in a group for that class"});
+        } else {
+          data.course_id = course.course_id;
+          findAvailableGroups(req, res, data);
+        }
       });
     } else {
-      res.send(404, 'Not found: Course not found');
+      res.json(404, {error: 'Course not found'});
     }
   }).error(function(error) {
-    res.send(500, 'Error: Find course');
+    res.json(500, {error: "Course find failed"});
   });
 };
 
-// Kick off signup process
+// Kick off assignment process
 var assign = function(req, res) {
   var userEmail = req.body.email;
   var userIntro = req.body.intro;
   var userDisplayName = req.body.display_name;
   var userCourse = req.body.course;
   var user_id;
-
+  var data = {
+    course_name: userCourse
+  };
   Sequelize.User.find({
     where: {email: userEmail}
   }).success(function(user) {
     if (user) {
-      user_id = user.user_id;
-      addToGroup(req, res, user_id, userCourse);
+      data.user_id = user.user_id;
+      addToGroup(req, res, data);
     } else {
       Sequelize.User.create({
         email: userEmail,
         intro: userIntro,
         display_name: userDisplayName
       }).success(function(user) {
-        addToGroup(req, res, user.user_id, userCourse);
+        data.user_id = user.user_id;
+        addToGroup(req, res, data);
       }).error(function(error) {
         console.log(error);
         res.send(500, 'Error: Create user');
