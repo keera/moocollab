@@ -1,11 +1,37 @@
 var Sequelize = require('./models');
 var Sendgrid = require('sendgrid');
+var dateFormat = require('dateformat');
+var crypto = require('crypto');
 // Email env values
 var sendgrid_username = process.env.SENDGRID_USERNAME;
 var sendgrid_password = process.env.SENDGRID_PASSWORD;
 var to = process.env.DEFAULT_TO;
 
 Sendgrid = Sendgrid(sendgrid_username, sendgrid_password);
+
+// Get unique hash based on values
+var getUserGroupHash = function(user_id, group_id) {
+  var shash = crypto.createHash('sha1');
+  shash.update((user_id + '&') + group_id);
+  return shash.digest('hex');
+}
+
+// Mark sent emails
+var markConfirmationSent = function(data) {
+  var recipients = data.recipients;
+
+  recipients.map(function(val) {
+    var groupUser = val.model;
+    if (!groupUser) return;
+    groupUser.updateAttributes({
+      user_confirm_send_date: dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss")
+    }).success(function() {
+      console.log("Mark confirmation succeeded");
+    }).error(function() {
+      console.log("Mark confirmation failed");
+    });
+  });
+}
 
 var sendConfirmationEmail = function(data) {
   var recipients = data.recipients ||
@@ -17,6 +43,9 @@ var sendConfirmationEmail = function(data) {
   var displayNames = recipients.map(function(val) {
     return val.display_name;
   });
+  var confirmationIds = recipients.map(function(val) {
+    return val.user_confirm_id;
+  });
 
   var email = new Sendgrid.Email();
   var fromEmail = 'admin@moocollab.com';
@@ -25,7 +54,8 @@ var sendConfirmationEmail = function(data) {
   'for the course <strong>' + course_name + '</strong>.</p>' +
   '<p>If you wish the join the group, please ' +
   '<strong>confirm</strong> by clicking the the link below.</p>' +
-  '<a href="http://www.moocollab.com">Yes, I want to join the group!</a>' +
+  '<a href="http://www.moocollab.com/confirm/%user_confirm_id%">' +
+  'Yes, I want to join the group!</a>' +
   '<p>If not, no problem! Just ignore this message. No hard feelings :)</p>' +
   '<p>Thanks,</p>'+
   '</p>MooCollab</p>';
@@ -35,14 +65,19 @@ var sendConfirmationEmail = function(data) {
   email.setSubject('We found a study group for you!');
   email.setHtml(html);
   email.setUniqueArgs({
-    group_id: '1789',
-    course_name: 'Introduction to Ninjitsu'
+    group_id: data.group_id,
+    course_name: course_name
   });
+  // Add substitutions
   email.addSubVal("%display_name%", displayNames);
+  email.addSubVal("%user_confirm_id%", confirmationIds);
+
   email.addHeaders({'X-Sent-Using': 'SendGrid-API'});
   email.addHeaders({'X-Transport': 'web'});
   Sendgrid.send(email, function(err, json) {
     if (err) {
+      data.recipients = recipients;
+      markConfirmationSent(data);
       return console.error(err);
     }
     console.log(json);
@@ -60,10 +95,13 @@ var emailGroupConfirmation = function(req, res, data) {
   }).success(function(groupUsers) {
     var recipients = [];
     for (var i in groupUsers) {
-      var user = groupUsers[i].user;
+      var group_user = groupUsers[i];
+      var user = group_user.user;
       recipients.push({
+        model: group_user,
         email: user.email,
-        display_name: user.display_name
+        display_name: user.display_name,
+        user_confirm_id: group_user.user_confirm_id
       });
     }
     data.recipients = recipients;
@@ -84,7 +122,8 @@ var createNewUserGroup = function(req, res, data) {
   }).success(function(group) {
     Sequelize.GroupUser.create({
       user_id: user_id,
-      group_id: group.group_id
+      group_id: group.group_id,
+      user_confirm_id: getUserGroupHash(user_id, group.group_id)
     }).success(function(groupUser) {
       res.json(200, {Success: "Create new group with user"});
     }).error(function(error) {
@@ -106,8 +145,9 @@ var addToExistingGroup = function(req, res, data) {
   var group_size = data.group_size || 0;
 
   Sequelize.GroupUser.create({
-      user_id: user_id,
-      group_id: group_id
+    user_id: user_id,
+    group_id: group_id,
+    user_confirm_id: getUserGroupHash(user_id, group_id)
   }).success(function(groupUser) {
     Sequelize.GroupUser.count({
       where: ["group_id = ?", group_id]
