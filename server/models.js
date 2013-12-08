@@ -82,17 +82,24 @@ var Group = sqlz.define('group', {
 });
 
 var GroupUser = sqlz.define('group_user', {
-  group_id: Sequelize.INTEGER,
-  user_id: Sequelize.INTEGER,
+  group_id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true
+  },
+  user_id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true
+  },
   user_join_date: {
     type: Sequelize.DATE,
     defaultValue: Sequelize.NOW
   },
   user_confirm_send_date: Sequelize.DATE,
-  user_confirm_date: Sequelize.DATE
+  user_confirm_date: Sequelize.DATE,
+  user_confirm_id: Sequelize.STRING
 }, {
   freezeTableName: true,
-  timestamps: false
+  timestamps: false,
 });
 
 GroupUser.belongsTo(Group, {foreignKey: 'group_id'});
