@@ -17,6 +17,13 @@ app.post('/signup', function(req, res) {
   GroupAssign.assign(req, res);
 });
 
+// Group confirmation
+app.post('/confirm/:code', function(req, res) {
+  var code = req.params.code;
+  console.log(code);
+  res.json(200, {msg: 'confirmed', data: code});
+});
+
 // Course search
 app.get('/course/:name', function(req, res) {
   Sequelize.Course.findAll({
