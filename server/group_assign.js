@@ -33,6 +33,12 @@ var markConfirmationSent = function(data) {
   });
 }
 
+// Final email
+var sendPostConfirmationEmail = function(data) {
+  console.log("WOOOOT");
+  console.log(data);
+};
+
 var sendConfirmationEmail = function(data) {
   var recipients = data.recipients ||
     [{email: "admin@moocollab.com", display_name: "boss"}];
@@ -76,14 +82,37 @@ var sendConfirmationEmail = function(data) {
   email.addHeaders({'X-Transport': 'web'});
   Sendgrid.send(email, function(err, json) {
     if (err) {
-      data.recipients = recipients;
-      markConfirmationSent(data);
       return console.error(err);
     }
+    data.recipients = recipients;
+    markConfirmationSent(data);
     console.log(json);
   });
 };
 
+var emailGroup = function(req, res, data) {
+  var group_id = data.group_id || 0;
+
+  Sequelize.GroupUser.findAll({
+    include: [Sequelize.User],
+    where: ["group_user.group_id = ?", group_id]
+  }).success(function(groupUsers) {
+    var recipients = [];
+    for (var i in groupUsers) {
+      var group_user = groupUsers[i];
+      var user = group_user.user;
+      recipients.push({
+        email: user.email,
+        display_name: user.display_name,
+      });
+    }
+    data.recipients = recipients;
+    sendPostConfirmationEmail(data);
+  }).error(function(error) {
+    // Failed to get users
+    console.log(error);
+  });
+};
 // Send email to group
 var emailGroupConfirmation = function(req, res, data) {
   var group_id = data.group_id || 0;
@@ -154,7 +183,7 @@ var addToExistingGroup = function(req, res, data) {
     }).success(function(count) {
       console.log("New user count: " + count);
       // We have a group
-      if (count == group_size) {
+      if (+count === +group_size) {
         emailGroupConfirmation(req, res, data);
       }
     }).error(function(error) {
@@ -234,6 +263,24 @@ var addToGroup = function(req, res, data) {
   });
 };
 
+// Send final email in assignment lifecycle
+var verifyGroup = function(req, res, data) {
+  var group_id = data.group_id || 0;
+  var group_size = data.group_size || 0;
+  // Count total confirmations
+  Sequelize.GroupUser.count({
+    where: ["group_id = ? AND user_confirm_date IS NOT NULL", group_id]
+  }).success(function(count) {
+    // We have an offical group!
+    if (+count === +group_size) {
+      emailGroup(req, res, {group_id: group_id});
+    }
+  }).error(function(error) {
+    // Log count fail
+    console.log(error);
+  });
+};
+
 // Kick off assignment process
 var assign = function(req, res) {
   var userEmail = req.body.email;
@@ -258,12 +305,47 @@ var assign = function(req, res) {
         addToGroup(req, res, data);
       }).error(function(error) {
         console.log(error);
-        res.send(500, 'Error: Create user');
+        res.json(500, {error: 'Create user failed'});
       });
     }
   }).error(function(error) {
-    res.send(500, 'Error: Find user');
+    res.json(500, {error: 'Find user failed'});
+  });
+};
+
+// Kick off confirmation process
+var confirm = function(req, res) {
+  var user_confirm_id = req.params.code;
+  // Get group_user associated
+  Sequelize.GroupUser.find({
+    include: [Sequelize.Group],
+    where: ["user_confirm_id = ? AND user_confirm_date IS NULL",
+      user_confirm_id
+  ]}).success(function(groupUser) {
+    if (!groupUser) {
+      console.log(groupUser);
+      res.json(500, {error: 'Confirm user failed'});
+      return console.error("no group user");
+    }
+    var group = groupUser.group;
+    groupUser.updateAttributes({
+      user_confirm_date: dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss")
+    }).success(function(groupUser) {
+      var group_id = groupUser.group_id;
+      var user_id = groupUser.user_id;
+      var data = {
+        group_id: group_id,
+        group_size: group.max_size
+      };
+      res.json(200, {success: 'Confirm user success'});
+      verifyGroup(req, res, data);
+    }).error(function() {
+      res.json(500, {error: 'Confirm user failed'});
+    });
+  }).error(function(error) {
+    res.json(500, {error: 'Confirm user failed'});
   });
 };
 
 module.exports.assign = assign;
+module.exports.confirm = confirm;

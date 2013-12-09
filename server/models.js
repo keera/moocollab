@@ -75,7 +75,8 @@ var Group = sqlz.define('group', {
     type: Sequelize.DATE,
     defaultValue: Sequelize.NOW
   },
-  course_id: Sequelize.INTEGER
+  course_id: Sequelize.INTEGER,
+  max_size: Sequelize.INTEGER
 }, {
   freezeTableName: true,
   timestamps: false
