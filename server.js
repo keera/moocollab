@@ -18,7 +18,7 @@ app.post('/signup', function(req, res) {
 });
 
 // Group confirmation
-app.post('/confirm/:code', function(req, res) {
+app.get('/confirm/:code', function(req, res) {
   var code = req.params.code;
   console.log(code);
   res.json(200, {msg: 'confirmed', data: code});
