@@ -17,6 +17,13 @@
         .length;
       var remaining = 256 - length;
       var $countdownEl = this.$('.countdown');
+      var getWarningMessage = function(remaining) {
+        var num = Math.abs(remaining);
+        var msg = (new String(num));
+        msg += (num === 1) ? " character" : " characters";
+        msg += (remaining >= 0) ? " remaining" : " overlimit";
+        return msg;
+      };
 
       if (remaining < 128 && remaining >= 64) {
         $countdownEl
@@ -32,7 +39,8 @@
           .addClass('label-info');
       }
 
-      $countdownEl.html(remaining + ' characters remaining');
+      $countdownEl.html(getWarningMessage(remaining));
+
     },
 
     submitForm: function() {
