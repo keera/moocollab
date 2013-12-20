@@ -35,8 +35,91 @@ var markConfirmationSent = function(data) {
 
 // Final email
 var sendPostConfirmationEmail = function(data) {
-  console.log("WOOOOT");
-  console.log(data);
+  var recipients = data.recipients ||
+    [{email: "admin@moocollab.com", display_name: "boss"}];
+  var course_name = data.course_name || "Introduction to Taijitsu";
+  var toEmails = recipients.map(function(val) {
+    return val.email;
+  });
+  var displayNames = recipients.map(function(val) {
+    return val.display_name;
+  });
+
+  var email = new Sendgrid.Email();
+  var fromEmail = 'admin@moocollab.com';
+  var html = '<p>Hey %display_name%,</p>' +
+    '<p>Your study group for the course <strong>' + course_name + '</strong> ' +
+    'is confirmed!</p>' +
+    '<p>Your group mates are:</p>' +
+    '<hr>' +
+    '<p>Username: %username_1%</p>' +
+    '<p>Email: %email_1%</p>' +
+    '<p>%intro_1%</p>' +
+    '<hr>' +
+    '<p>Username: %username_2%</p>' +
+    '<p>Email: %email_2%</p>' +
+    '<p>%intro_2%</p>' +
+    '<hr>' +
+    '<p>What\'s next? Read the tips <a href="www.moocollab.com">here</a> ' +
+    'on how you can get your group up and running!' +
+    '<p>Enjoy the class :)</p>' +
+    '</p>MooCollab</p>';
+
+  email.addTo(toEmails);
+  email.setFrom(fromEmail);
+  email.setSubject('Your study group is confirmed!');
+  email.setHtml(html);
+  email.setUniqueArgs({
+    type: 'Post confirmation',
+    group_id: data.group_id,
+    course_name: course_name
+  });
+
+  // Get lists for substituting group mate data
+  var groupMates = [];
+  for (var i in users) {
+    var curr = users[i];
+    var others = users.filter(function(x) {
+       return x !== curr;
+    });
+    groupMates.push(others);
+  }
+
+  // Email variable lists
+  var username_1 = [],
+    email_1 = [],
+    intro_1 = [],
+    username_2 = [],
+    email_2 = [],
+    intro_2 = [];
+
+  for (var j in groupMates) {
+    var first = groupMates[j][0];
+    var second = groupMates[j][1];
+    username_1.push(first.display_name);
+    email_1.push(first.email);
+    intro_1.push(first.intro);
+    username_2.push(second.display_name);
+    email_2.push(second.email);
+    intro_2.push(second.intro);
+  }
+
+  email.addSubVal("%display_name%", displayNames);
+  email.addSubVal("%username_1%", username_1);
+  email.addSubVal("%email_1%", email_1);
+  email.addSubVal("%intro_1%", intro_1);
+  email.addSubVal("%username_2%", username_2);
+  email.addSubVal("%email_2%", email_2);
+  email.addSubVal("%intro_2%", intro_2);
+
+  email.addHeaders({'X-Sent-Using': 'SendGrid-API'});
+  email.addHeaders({'X-Transport': 'web'});
+  Sendgrid.send(email, function(err, json) {
+    if (err) {
+      return console.error(err);
+    }
+    console.log(json);
+  });
 };
 
 var sendConfirmationEmail = function(data) {
@@ -90,8 +173,10 @@ var sendConfirmationEmail = function(data) {
   });
 };
 
+// Group post confirmation
 var emailGroup = function(req, res, data) {
   var group_id = data.group_id || 0;
+  var course_name = data.course_name || "Undefined course";
 
   Sequelize.GroupUser.findAll({
     include: [Sequelize.User],
@@ -104,6 +189,7 @@ var emailGroup = function(req, res, data) {
       recipients.push({
         email: user.email,
         display_name: user.display_name,
+        intro: user.intro
       });
     }
     data.recipients = recipients;
@@ -273,7 +359,7 @@ var verifyGroup = function(req, res, data) {
   }).success(function(count) {
     // We have an offical group!
     if (+count === +group_size) {
-      emailGroup(req, res, {group_id: group_id});
+      emailGroup(req, res, data);
     }
   }).error(function(error) {
     // Log count fail
@@ -328,17 +414,25 @@ var confirm = function(req, res) {
       return console.error("no group user");
     }
     var group = groupUser.group;
+    var course_id = group.course_id;
     groupUser.updateAttributes({
       user_confirm_date: dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss")
     }).success(function(groupUser) {
-      var group_id = groupUser.group_id;
-      var user_id = groupUser.user_id;
-      var data = {
-        group_id: group_id,
-        group_size: group.max_size
-      };
-      res.json(200, {success: 'Confirm user success'});
-      verifyGroup(req, res, data);
+      Sequelize.Course.find({
+        where: {course_id: course_id}
+      }).success(function(course) {
+        var group_id = groupUser.group_id;
+        var user_id = groupUser.user_id;
+        var data = {
+          group_id: group_id,
+          group_size: group.max_size,
+          course_name: course.name
+        };
+        res.json(200, {success: 'Confirm user success'});
+        verifyGroup(req, res, data);
+      }).error(function() {
+        res.json(500, {error: 'Unable to get course info'});
+      });
     }).error(function() {
       res.json(500, {error: 'Confirm user failed'});
     });
