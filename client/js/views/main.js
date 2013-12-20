@@ -13,6 +13,12 @@
     },
 
     initialize: function() {
+      var currRoute = Backbone.history.fragment;
+      if (currRoute) {
+        this.updateTab(currRoute);
+        return;
+      }
+
       this.updateHomeTab();
     },
 
