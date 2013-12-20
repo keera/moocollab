@@ -33,7 +33,7 @@ var markConfirmationSent = function(data) {
   });
 }
 
-// Final email
+// Send final email
 var sendPostConfirmationEmail = function(data) {
   var recipients = data.recipients ||
     [{email: "admin@moocollab.com", display_name: "boss"}];
@@ -252,8 +252,6 @@ var createNewUserGroup = function(req, res, data) {
   });
 };
 
-
-
 // Add user to an existing group
 var addToExistingGroup = function(req, res, data) {
   var user_id = data.user_id || 0;
@@ -419,6 +417,7 @@ var confirm = function(req, res) {
     groupUser.updateAttributes({
       user_confirm_date: dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss")
     }).success(function(groupUser) {
+      // Get course name
       Sequelize.Course.find({
         where: {course_id: course_id}
       }).success(function(course) {
@@ -431,10 +430,10 @@ var confirm = function(req, res) {
         };
         res.json(200, {success: 'Confirm user success'});
         verifyGroup(req, res, data);
-      }).error(function() {
+      }).error(function(error) {
         res.json(500, {error: 'Unable to get course info'});
       });
-    }).error(function() {
+    }).error(function(error) {
       res.json(500, {error: 'Confirm user failed'});
     });
   }).error(function(error) {
