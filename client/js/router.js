@@ -5,7 +5,8 @@
 
     routes: {
       ""     : "home",
-      "about": "about"
+      "about": "about",
+      "faq"  : "faq"
     },
 
     about: function() {
@@ -14,6 +15,10 @@
 
     home: function() {
       (new MC.Views.Home()).render();
+    },
+
+    faq: function() {
+      (new MC.Views.FAQ()).render();
     }
 
   });

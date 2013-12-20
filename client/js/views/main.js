@@ -8,7 +8,8 @@
 
     events: {
       'click .home': 'updateHomeTab',
-      'click .about': 'updateAboutTab'
+      'click .about': 'updateAboutTab',
+      'click .faq': 'updateFaqTab'
     },
 
     initialize: function() {
@@ -31,6 +32,10 @@
     updateAboutTab: function() {
       this.updateTab('about');
     },
+
+    updateFaqTab: function() {
+      this.updateTab('faq');
+    }
 
   });
 
