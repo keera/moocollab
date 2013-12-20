@@ -77,9 +77,9 @@ var sendPostConfirmationEmail = function(data) {
 
   // Get lists for substituting group mate data
   var groupMates = [];
-  for (var i in users) {
-    var curr = users[i];
-    var others = users.filter(function(x) {
+  for (var i in recipients) {
+    var curr = recipients[i];
+    var others = recipients.filter(function(x) {
        return x !== curr;
     });
     groupMates.push(others);
@@ -199,6 +199,7 @@ var emailGroup = function(req, res, data) {
     console.log(error);
   });
 };
+
 // Send email to group
 var emailGroupConfirmation = function(req, res, data) {
   var group_id = data.group_id || 0;
