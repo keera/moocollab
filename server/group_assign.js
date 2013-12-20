@@ -60,7 +60,7 @@ var sendPostConfirmationEmail = function(data) {
     '<p>Email: %email_2%</p>' +
     '<p>%intro_2%</p>' +
     '<hr>' +
-    '<p>What\'s next? Read the tips <a href="www.moocollab.com">here</a> ' +
+    '<p>What\'s next? Read the tips <a href="www.moocollab.com/#faq">here</a> ' +
     'on how you can get your group up and running!' +
     '<p>Enjoy the class :)</p>' +
     '</p>MooCollab</p>';
