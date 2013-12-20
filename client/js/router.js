@@ -6,7 +6,8 @@
     routes: {
       ""     : "home",
       "about": "about",
-      "faq"  : "faq"
+      "faq"  : "faq",
+      "alert/:type": "alert"
     },
 
     about: function() {
@@ -19,6 +20,13 @@
 
     faq: function() {
       (new MC.Views.FAQ()).render();
+    },
+
+    alert: function(type) {
+      var options = {
+        type: type
+      };
+      (new MC.Views.Home()).render(options);
     }
 
   });

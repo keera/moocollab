@@ -428,7 +428,7 @@ var confirm = function(req, res) {
           group_size: group.max_size,
           course_name: course.name
         };
-        res.json(200, {success: 'Confirm user success'});
+        res.redirect(302, '#alert/confirm-success');
         verifyGroup(req, res, data);
       }).error(function(error) {
         res.json(500, {error: 'Unable to get course info'});

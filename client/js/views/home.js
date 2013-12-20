@@ -86,7 +86,7 @@
               $formLoaderEl.removeClass('form-processing');
               $formLoaderEl.hide();
               $('#myModal').modal('hide');
-              (new MC.Views.Alert()).render();
+              (new MC.Views.Alert({type: 'signup-success'})).render();
             }, (diff < minDelay) ? minDelay - diff : 0);
           },
           error: function(model, res, options) {
@@ -102,7 +102,7 @@
 
     },
 
-    render: function() {
+    render: function(options) {
       this.$el.html(this.template());
       var $courseTypeaheadEl = this.$("input[name='course'].twitter-typeahead");
 
@@ -115,13 +115,19 @@
           url: 'course/%QUERY',
           beforeSend: function(e) {
             $courseTypeaheadEl
-            .addClass('autocomplete-loading');},
+            .addClass('autocomplete-loading');
+          },
           complete: function(e) {
             $courseTypeaheadEl
-            .removeClass('autocomplete-loading');}
+            .removeClass('autocomplete-loading');
+          }
         },
         limit: 5,
       });
+
+      if (options && options.type) {
+        (new MC.Views.Alert({type: options.type})).render();
+      }
 
       return this;
     }
